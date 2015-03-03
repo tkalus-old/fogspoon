@@ -20,3 +20,7 @@ class Film(JsonSerializer, db.Model):
 
     locations = db.relationship('Location', secondary=films_locations,
                                 backref=db.backref('films', lazy='dynamic'))
+
+    @property
+    def display_title(self):
+        return u'{title} ({year})'.format(title=self.title, year=self.release_year)

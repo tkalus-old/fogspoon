@@ -9,12 +9,12 @@ bp = Blueprint('locations', __name__, url_prefix='/location')
 
 
 @route(bp, 's')
-def list_films():
+def list_locations():
     """Returns all locations."""
     return [l for l in locations.all()]
 
 
 @route(bp, '/<location_id>')
-def get_film(location_id):
+def get_location(location_id):
     """Returns a location instance."""
     return locations.get_or_404(location_id)
