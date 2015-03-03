@@ -3,22 +3,112 @@
 bootstrap_db.py
 
 This file takes the CSV file detailing filming locations in SF and loads it
-into SQLAlchemy
+into a dict, massages and normalizes the location information, uses the GeoPy
+module to get latitude and longitude information, then saves that information
+into a database via fogspoon's models.
 """
 
 from __future__ import print_function
 
 import argparse
 import csv
+import geopy
 import logging
 
 from fogspoon.api import create_app
 from fogspoon.core import db
-from fogspoon.services import films, locations
+from fogspoon.services import films, locations, geo_locs
 
 LOGGING_FORMAT = u'\033[1;36m%(levelname)s:\033[0;37m %(message)s'
 logging.basicConfig(format=LOGGING_FORMAT,
                     level=logging.DEBUG)
+logging.basicConfig(format=LOGGING_FORMAT,
+                    level=logging.ERROR)
+logging.getLogger('geopy').setLevel(logging.DEBUG)
+
+
+class GeoLoc(object):
+    """
+    Given a Location Description, do a best effort to get a lat-lon pair
+    leveraging the GeoPy library.
+    """
+    default_lat_lon = (37.77928, -122.41922)  # TODO use better location; SF City Hall for now
+
+    def __init__(self, loc_string=None):
+        self.raw_loc_string = loc_string
+        self.location = None
+        self.service = ''
+
+        self.geolocators = {
+            'geocoderdotus': {},
+            #'googlev3': {'api_key':''},  # Requires API Key
+        }
+
+        self.log = logging.getLogger()
+
+    @property
+    def lat_lon(self):
+        for s in self.geolocators.keys():
+            if self.geolocator_results.get(s):
+                return (self.geolocator_results.get(s).latitude,
+                        self.geolocator_results.get(s).longitude)
+            return self.default_lat_lon
+
+    @property
+    def results_to_dict(self):
+        results = dict()
+        if self.location:
+            results.update({'service': self.service,
+                            'location': self.raw_loc_string})
+            results.update(dict((k, str(getattr(self.location, k))) for k in [
+                'altitude',
+                'latitude',
+                'longitude',
+                'raw']))
+        return results
+
+    def process(self):
+        for geolocator, kwargs in self.geolocators.iteritems():
+            try:
+                self.location = None
+                geo_service = geopy.geocoders.get_geocoder_for_service(geolocator)(**kwargs)
+                location = geo_service.geocode(self.raw_loc_string)
+                if location:
+                    self.location = location
+                    self.service = geolocator
+                    self.log.info(u'service {}: {}: {})'.format(
+                        geolocator,
+                        self.raw_loc_string,
+                        self.location))
+                else:
+                    self.log.warn(u'service {} no location : {}: None'.format(
+                        geolocator,
+                        self.raw_loc_string)
+                    )
+            except geopy.exc.GeocoderTimedOut:
+                self.log.warn(u'service {} Timeout: {}: None'.format(
+                    geolocator,
+                    self.raw_loc_string)
+                )
+            except Exception as detail:
+                self.log.exception(u'service "{geolocator}" Exception with raw_loc_string "{raw_loc_string}" \n{detail}'.format(
+                    geolocator=geolocator,
+                    raw_loc_string=self.raw_loc_string,
+                    detail=detail))
+
+
+class SFGeoLoc(GeoLoc):
+    """
+    San Francisco-specific GeoLocator class.
+    """
+    default_lat_lon = (37.77928, -122.41922)  # SF City Hall
+    default_lat_lon = None
+
+    def __init__(self, loc_string=None):
+        if loc_string:
+            super(SFGeoLoc, self).__init__(u'{}, San Francisco, CA'.format(loc_string))
+        else:
+            super(SFGeoLoc, self).__init__()
 
 
 class CSVToDict(object):
@@ -41,7 +131,6 @@ class CSVToDict(object):
                     fieldnames.append(edited_key)
             fieldnames = tuple(fieldnames)
             csvInstance = csv.DictReader(input_file, fieldnames=fieldnames)
-            #self.data = [row for row in csvInstance]
             self.data = [dict((k, unicode(v, 'utf-8')) for k, v in row.iteritems()) for row in csvInstance]
 
 
@@ -55,11 +144,6 @@ def bootstrap_db(bootstrap_csv_file):
             film_args = {'title': location_entry.get('title'),
                          'release_year': location_entry.get('release_year')}
             film = films.first_or_create(**film_args)
-            logging.debug(u'bootstrap {title}({year})'.format(
-                title=film.title,
-                year=film.release_year,
-            ))
-
             # TODO Add director, writer, producer and actors
 
             place_name = location_entry.get('locations')
@@ -74,6 +158,41 @@ def bootstrap_db(bootstrap_csv_file):
                 if not location in film.locations:
                     films.add_location(film, location)
                     logging.info(u'adding loc {loc} for {title}({year})'.format(
+                        loc=location.place_name,
+                        title=film.title,
+                        year=film.release_year,
+                    ))
+
+                geo_loc_q = SFGeoLoc(place_name)
+                geo_loc = geo_locs.first(**{'location': geo_loc_q.raw_loc_string})
+                if not geo_loc:
+                    logging.info(u'geo querying for {}'.format(place_name))
+                    geo_loc_q.process()
+                    geo_loc_args = geo_loc_q.results_to_dict
+                    if geo_loc_args:
+                        geo_loc = geo_locs.first_or_create(**geo_loc_args)
+                    else:
+                        # Something weird happened with the query...
+                        geo_loc = None
+                if geo_loc:
+                    if not geo_loc in location.geo_locs:
+                        locations.add_geo_loc(location, geo_loc)
+                        logging.info(u'added {geo} for {title}({year}) - {loc}'.format(
+                            geo=geo_loc.location,
+                            loc=location.place_name,
+                            title=film.title,
+                            year=film.release_year,
+                        ))
+                    else:
+                        logging.info(u'have {geo} for {title}({year}) - {loc}'.format(
+                            geo=geo_loc.location,
+                            loc=location.place_name,
+                            title=film.title,
+                            year=film.release_year,
+                        ))
+                else:
+                    logging.error(u'failed geo query for {geo} while doing {title}({year}) - {loc}'.format(
+                        geo=place_name,
                         loc=location.place_name,
                         title=film.title,
                         year=film.release_year,
