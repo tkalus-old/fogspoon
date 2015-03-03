@@ -14,7 +14,7 @@ import logging
 
 from fogspoon.api import create_app
 from fogspoon.core import db
-from fogspoon.services import films
+from fogspoon.services import films, locations
 
 LOGGING_FORMAT = u'\033[1;36m%(levelname)s:\033[0;37m %(message)s'
 logging.basicConfig(format=LOGGING_FORMAT,
@@ -54,8 +54,30 @@ def bootstrap_db(bootstrap_csv_file):
         for location_entry in location_entries:
             film_args = {'title': location_entry.get('title'),
                          'release_year': location_entry.get('release_year')}
-            films.first_or_create(**film_args)
+            film = films.first_or_create(**film_args)
+            logging.debug(u'bootstrap {title}({year})'.format(
+                title=film.title,
+                year=film.release_year,
+            ))
+
             # TODO Add director, writer, producer and actors
+
+            place_name = location_entry.get('locations')
+            if place_name:
+                location_args = {'place_name': place_name,
+                                 'fun_fact': location_entry.get('fun_facts')}
+                try:
+                    location = locations.first_or_create(**location_args)
+                except Exception as detail:
+                    logging.exception(u'location: {}\n{}'.format(location_args, detail))
+                    raise Exception("boop")
+                if not location in film.locations:
+                    films.add_location(film, location)
+                    logging.info(u'adding loc {loc} for {title}({year})'.format(
+                        loc=location.place_name,
+                        title=film.title,
+                        year=film.release_year,
+                    ))
 
 
 parser = argparse.ArgumentParser()
