@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block page_title %}Fogspoon{% endblock %}</title>
+    {% assets "css_all" -%}
+      <link rel="stylesheet" href="{{ ASSET_URL }}">
+    {%- endassets %}
+</head>
+<body>
+    <div class="container">
+      {% block body %}
+        Body
+      {% endblock %}
+    </div>
+    {% assets "js_vendor" -%}
+      <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+    {% assets "js_main" -%}
+      <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+  </body>
+</html>
