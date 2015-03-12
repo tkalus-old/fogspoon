@@ -16,12 +16,20 @@ def list_films():
     /films?full -> return full info
     """
     app = current_app._get_current_object()
-    if request.query_string == 'full' and app.config.get('DEBUG', False):
+    if request.query_string == 'full' and app.config.get('DEBUG', True):
         return [f for f in films.all()]
-    return dict((f.display_title, f.id) for f in films.all())
+    return list({'title': f.display_title,
+                 'id': f.id} for f in films.all())
 
 
 @route(bp, u'/<film_id>')
 def get_film(film_id):
     """Returns a film instance."""
-    return films.get_or_404(film_id)
+    film = films.get_or_404(film_id)
+    callback = request.args.get('callback', False)
+    if callback:
+        return film.to_geo_json
+    q_format = request.args.get('format', False)
+    if q_format == 'geo_json':
+        return film.to_geo_json
+    return film

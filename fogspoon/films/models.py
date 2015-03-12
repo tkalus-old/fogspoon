@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from geojson import FeatureCollection
+
 from ..core import db
 from ..helpers import JsonSerializer
 
@@ -24,3 +26,16 @@ class Film(JsonSerializer, db.Model):
     @property
     def display_title(self):
         return u'{title} ({year})'.format(title=self.title, year=self.release_year)
+
+    @property
+    def to_geo_json(self):
+        """Return GeoJSON objects.
+           Could have also used the GeoAlchemy module, but it seemed heavy...
+           TODO Investigate a way to hide this in a base class, similar to JsonSerializer
+        """
+        if self.locations:
+            properties = dict([(u'id', self.id),
+                               (u'title', self.display_title)])
+            return FeatureCollection([l.to_geo_json(self.display_title) for l in self.locations],
+                                     properties=properties)
+        return None

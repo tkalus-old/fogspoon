@@ -9,6 +9,7 @@ argparse==1.2.1
 cssmin==0.2.0
 factory-boy==2.4.1
 flask-jsontools==0.1.1-0
+geojson==1.0.9
 geopy==1.9.1
 itsdangerous==0.24
 jsmin==2.1.1

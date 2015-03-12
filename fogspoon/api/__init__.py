@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import simplejson as json
 from functools import wraps
 
-from flask import jsonify
+from flask import current_app, jsonify, request
 
 from ..core import FogspoonError
 from ..helpers import JSONEncoder
@@ -39,7 +40,15 @@ def route(bp, *args, **kwargs):
             if isinstance(rv, tuple):
                 sc = rv[1]
                 rv = rv[0]
-            return jsonify(dict(data=rv)), sc
+
+            # JSONP support too!
+            callback = request.args.get('callback', False)
+            if callback:
+                content = str(callback) + '(' + json.dumps(rv) + ')'
+                mimetype = 'application/javascript'
+                return current_app.response_class(content, mimetype=mimetype)
+            else:
+                return jsonify(dict(data=rv)), sc
         return f
 
     return decorator

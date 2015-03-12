@@ -41,3 +41,13 @@ class FilmApiTestCase(FogspoonApiTestCase):
         expected = self.location1.id
         actual = actual_data['data']['locations'][1]['id']
         self.assertEqual(expected, actual)
+
+    def test_get_film_check_geo_json(self):
+        r = self.jget('/film/%s?format=geo_json' % self.film.id)
+        self.assertOkJson(r)
+        actual_data = json.loads(r.data)
+
+        self.assertEqual('FeatureCollection', actual_data['data']['type'])
+        self.assertEqual('Feature', actual_data['data']['features'][0]['type'])
+        self.assertEqual('MultiPoint', actual_data['data']['features'][0]['geometry']['type'])
+        self.assertEqual(1, len(actual_data['data']['features'][0]['geometry']['coordinates']))

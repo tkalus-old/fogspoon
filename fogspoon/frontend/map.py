@@ -12,6 +12,11 @@ def index():
     """Returns the map interface."""
     return render_template('map.html')
 
+@route(bp, '/map2')
+def index2():
+    """Returns the map interface."""
+    return render_template('map2.html')
+
 @route(bp, '/fogspoon')
 def fogspoon():
     """

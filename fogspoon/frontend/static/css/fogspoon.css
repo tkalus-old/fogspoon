@@ -6,3 +6,10 @@ html, body, .container, #map {
     height: 100%;
     width: 100%;
 }
+
+#search {
+    position:absolute;
+    top:10px;
+    left: 50px;
+    z-index:1000;
+}

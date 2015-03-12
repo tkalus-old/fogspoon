@@ -12,6 +12,11 @@ After being solicited for samples of Python code that I’ve worked on, I found 
 - Illustrate my moderate understanding of Frontend
 - Produce something fun and useful.
 
+## ToDo
+
+- Leverage Google’s [Geocoding](https://developers.google.com/maps/documentation/geocoding/) and [Places](https://developers.google.com/places/documentation/) APIs to get better accuracy.
+  - E.G. Blue Jasmine’s Marina Blvd from Leguna to Baker is a straight line and Ocean Beach at Lincoln is resolving to the City-Center
+
 ## How to Install or Deploy
 
 #### Linux Server
