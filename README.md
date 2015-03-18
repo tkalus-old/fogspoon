@@ -1,6 +1,6 @@
-# fog-spoon
+# fogspoon
 
-[![Build Status](https://drone.io/bitbucket.org/tkalus/fog-spoon/status.png)](https://drone.io/bitbucket.org/tkalus/fog-spoon/latest)
+[![Build Status](https://travis-ci.org/tkalus/fogspoon.svg)](https://travis-ci.org/tkalus/fogspoon)
 
 Queryable Service that shows on a map where movies have been filmed in San Francisco.
 
@@ -22,8 +22,8 @@ After being solicited for samples of Python code that I’ve worked on, I found 
 #### Linux Server
 
 ```
-$ git clone https://bitbucket.org/tkalus/fog-spoon.git
-$ cd fog-spoon
+$ git clone https://github.com/tkalus/fogspoon.git
+$ cd fogspoon
 $ pip install -r requirements.txt
 $ python wsgi.py
 ```
