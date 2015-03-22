@@ -18,6 +18,10 @@ def list_films():
     app = current_app._get_current_object()
     if request.query_string == 'full' and app.config.get('DEBUG', True):
         return [f for f in films.all()]
+    query = request.args.get('q', None)
+    if query:
+        return list({'label': f.display_title,
+                     'id': f.id} for f in films.like('title', query))
     return list({'title': f.display_title,
                  'id': f.id} for f in films.all())
 

@@ -19,7 +19,32 @@ class FilmApiTestCase(FogspoonApiTestCase):
         self.assertOkJson(r)
         actual_data = json.loads(r.data)
         # expecting one film
-        self.assertEqual(1, len(actual_data))
+        self.assertEqual(1, len(actual_data['data']))
+
+    def test_query_lc_film(self):
+        query = self.film.title.split(' ')[0].lower()
+        r = self.jget('/films?q=%s' % (query))
+        self.assertOkJson(r)
+        actual_data = json.loads(r.data)
+        # expecting one film
+        self.assertEqual(1, len(actual_data['data']))
+
+    def test_query_uc_film(self):
+        query = self.film.title.split(' ')[0].upper()
+        r = self.jget('/films?q=%s' % (query))
+        self.assertOkJson(r)
+        actual_data = json.loads(r.data)
+        # expecting one films
+        self.assertEqual(1, len(actual_data['data']))
+
+    def test_query_no_film(self):
+        # No films in test factory contain 'Alpha'
+        query = 'Alpha'
+        r = self.jget('/films?q=%s' % (query))
+        self.assertOkJson(r)
+        actual_data = json.loads(r.data)
+        # expecting no films
+        self.assertEqual(0, len(actual_data['data']))
 
     def test_get_film(self):
         r = self.jget('/film/%s' % self.film.id)

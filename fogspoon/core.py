@@ -79,6 +79,17 @@ class Service(object):
         """
         return self.__model__.query.filter_by(**kwargs)
 
+    def like(self, attr, term):
+        """Returns a list of instances of the service's model whose passed attribute
+        is similar to the search term
+
+        :param attr: string-attribute
+        :param term: search term used by 'ilike()'
+        """
+        return self.__model__.query.filter(
+            getattr(self.__model__, attr).ilike('%' + term + '%')
+        ).all()
+
     def first(self, **kwargs):
         """Returns the first instance found of the service's model filtered by
         the specified key word arguments.
