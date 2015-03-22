@@ -52,34 +52,31 @@ function add_film(film_id) {
 }
 
 function init_search() {
-
-    var Films = Backbone.Model.extend({
-        label: function () {
-            return this.get("title");
+    $("#filter").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "/api/films",
+                dataType: "json",
+                data: {
+                    q: request.term
+                },
+                success: function(data) {
+                    response(data.data);
+                }
+            });
         },
-    })
-
-    var FilmCollection = Backbone.Collection.extend({
-        model: Films,
-        parse: function(response) {
-            return response.data;
+        minLength: 2,
+        select: function(event, ui) {
+            add_film(ui.item.id);
         },
-    })
-
-    $.get("/api/films", function(data) {
-        films = new FilmCollection(data.data)
-
-        new AutoCompleteView({
-            input: $("#filter"),
-            model: films,
-            onSelect: function (model) {
-                add_film(model.id);
-                $("#filter").val("");
-            },
-            minKeywordLength: 1,
-        }).render();
-    })
-
+        open: function() {
+            $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+        },
+        close: function() {
+            $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+            $("#filter").val("");
+        }
+    });
 }
 
 function init_map() {

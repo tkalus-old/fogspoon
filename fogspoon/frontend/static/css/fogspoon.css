@@ -13,3 +13,14 @@ html, body, .container, #map {
     left: 50px;
     z-index:1000;
 }
+
+.ui-autocomplete {
+    max-height: 100px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+
+.ui-autocomplete-loading {
+    background: white url("/static/images/ui-anim_basic_16x16.gif") right center no-repeat;
+}
