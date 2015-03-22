@@ -36,6 +36,7 @@ class Film(JsonSerializer, db.Model):
         if self.locations:
             properties = dict([(u'id', self.id),
                                (u'title', self.display_title)])
-            return FeatureCollection([l.to_geo_json(self.display_title) for l in self.locations],
-                                     properties=properties)
+            return FeatureCollection(
+                filter(None,[l.to_geo_json(self.display_title) for l in self.locations]),
+                properties=properties)
         return None
