@@ -7,18 +7,31 @@ html, body, .container, #map {
     width: 100%;
 }
 
-#search {
+ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+#search_div {
     position:absolute;
     top:10px;
     left: 50px;
-    z-index:1000;
+    z-index:500;
+}
+
+.filter {
+    padding: 8px;
+    margin: 0;
+    background-color: #fff;
 }
 
 .ui-autocomplete {
-    max-height: 100px;
+    max-height: 300px;
     overflow-y: auto;
     /* prevent horizontal scrollbar */
     overflow-x: hidden;
+    z-index:1000;
 }
 
 .ui-autocomplete-loading {

@@ -24,13 +24,28 @@ function marker_color() {
 
 function clear_map() {
     Markers_Layer.clearLayers();
-    $("#filter").val("");
+    $("#search").val("");
+    $("#filters").empty();
+}
+
+function add_filter(title, layer) {
+    var id = "filter_" + layer._leaflet_id;
+    var id_rem = id + "_rem";
+    $('<li class="filter" id="'+ id + '">').appendTo("#filters");
+    $('<i class="fa fa-times" id="'+ id_rem + '">').appendTo('#'+id)
+    $('<span>').text(title).appendTo('#'+id)
+
+    $("#"+id_rem).click(function() {
+        $("#"+id).empty().remove();
+        Markers_Layer.removeLayer(layer);
+    })
+
 }
 
 function add_film(film_id) {
     $.getJSON("/api/film/"+ film_id +"?format=geo_json", function(data) {
         var color = marker_color();
-        var geojson = L.geoJson(data.data, {
+        var layer = L.geoJson(data.data, {
             onEachFeature: function (feature, layer) {
                 layer.bindPopup(
                     "<b>{0}</b><br/>{1}<br/>{2}".format(
@@ -46,13 +61,13 @@ function add_film(film_id) {
                 return L.marker(latlng, {icon: icon});
             },
         });
-        //geojson.addTo(Map);
-        Markers_Layer.addLayer(geojson);
+        Markers_Layer.addLayer(layer);
+        add_filter(data.data.properties.title, layer);
     });
 }
 
 function init_search() {
-    $("#filter").autocomplete({
+    $("#search").autocomplete({
         source: function(request, response) {
             $.ajax({
                 url: "/api/films",
@@ -74,7 +89,7 @@ function init_search() {
         },
         close: function() {
             $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-            $("#filter").val("");
+            $("#search").val("");
         }
     });
 }

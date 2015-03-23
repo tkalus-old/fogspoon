@@ -9,7 +9,7 @@ class FogspoonFrontendTestCase(FogspoonAppTestCase):
     def test_front(self):
         r = self.get('/')
         self.assertOkHtml(r)
-        self.assertEquals(1648, len(r.data))
+        self.assertEquals(1793, len(r.data))
 
     def _create_app(self):
         return create_app(settings)

@@ -21,7 +21,9 @@ def list_films():
     query = request.args.get('q', None)
     if query:
         return list({'label': f.display_title,
-                     'id': f.id} for f in films.like('title', query))
+                     'id': f.id} for f in sorted(
+                         films.like('title', query),
+                         key=lambda x:x.display_title))
     return list({'title': f.display_title,
                  'id': f.id} for f in films.all())
 

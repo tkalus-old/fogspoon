@@ -1,6 +1,6 @@
 # fogspoon
 
-[![Build Status](https://travis-ci.org/tkalus/fogspoon.svg)](https://travis-ci.org/tkalus/fogspoon)
+[fogspoon.com](http://fogspoon.com) [![Build Status](https://travis-ci.org/tkalus/fogspoon.svg)](https://travis-ci.org/tkalus/fogspoon)
 
 Queryable Service that shows on a map where movies have been filmed in San Francisco.
 
@@ -16,6 +16,7 @@ After being solicited for samples of Python code that I’ve worked on, I found 
 
 - Leverage Google’s [Geocoding](https://developers.google.com/maps/documentation/geocoding/) and [Places](https://developers.google.com/places/documentation/) APIs to get better accuracy.
   - E.G. Blue Jasmine’s Marina Blvd from Leguna to Baker is a straight line and Ocean Beach at Lincoln is resolving to the City-Center
+- Make the FE prettier... and less hackish.
 
 ## How to Install or Deploy
 
