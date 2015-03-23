@@ -101,7 +101,7 @@ function init_map() {
     }).setView(map_center, 13);
 
     L.control.attribution({
-        prefix: '<a href="http://github.com/tkalus/fog-spoon">FogSpoon</a> | <a href="http://leafletjs.com" title="A JS Library for interactive maps.">Leaflet</a>',
+        prefix: '<a href="http://github.com/tkalus/fogspoon">FogSpoon</a> | <a href="http://leafletjs.com" title="A JS Library for interactive maps.">Leaflet</a>',
     }).addTo(Map);
 
     mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
