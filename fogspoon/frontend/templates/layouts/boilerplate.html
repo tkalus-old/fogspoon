@@ -3,20 +3,21 @@
 <head>
     <title>{% block page_title %}Fogspoon{% endblock %}</title>
     {% assets "css" -%}
-        <link rel="stylesheet" href="{{ ASSET_URL }}" />
+    <link rel="stylesheet" href="{{ ASSET_URL }}" />
     {% endassets %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 </head>
 <body>
     <div class="container">
-      {% block body %}
+    {% block body %}
         Body
-      {% endblock %}
+    {% endblock %}
     </div>
     <script type=text/javascript>
         var Static_URL = "{{ url_for('static', filename='') }}";
     </script>
     {% assets "js" -%}
-      <script src="{{ ASSET_URL }}"></script>
+    <script src="{{ ASSET_URL }}"></script>
     {% endassets %}
-  </body>
+</body>
 </html>
