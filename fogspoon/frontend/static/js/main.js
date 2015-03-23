@@ -125,5 +125,20 @@ $(window).load(function() {
     $("#clear-map").click(function() {
         clear_map();
     });
+
+    /* Add some interesting films */
+    film_list = ["Bullitt", "Dirty Harry", "The Rock", "Vertigo"];
+
+    film_list.forEach(function(film) {
+        $.ajax({
+            url: "/api/films",
+            data: {
+                q: film
+            },
+            success: function(data) {
+                add_film(data.data[0].id);
+            }
+        });
+    });
 });
 
