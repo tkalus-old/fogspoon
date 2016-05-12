@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/tkalus/fogspoon.svg)](https://travis-ci.org/tkalus/fogspoon)
 
-[fogspoon.com](http://fogspoon.com)
+~~[fogspoon.com](http://fogspoon.com)~~ Not currently deployed.
 
 Queryable Service that shows on a map where movies have been filmed in San Francisco.
 
