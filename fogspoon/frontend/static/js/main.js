@@ -106,12 +106,12 @@ function init_map() {
 
     mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
     mapquestLink = '<a href="http://www.mapquest.com">MapQuest</a>';
-    mapquestPic = '<img src="http://developer.mapquest.com/content/osm/mq_logo.png">';
+    mapquestPic = '<img src="//developer.mapquest.com/content/osm/mq_logo.png">';
     L.tileLayer(
-        'http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
+        '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; '+mapLink+'. Tiles courtesy of '+mapquestLink+mapquestPic,
         maxZoom: 18,
-        subdomains: "1234",
+        subdomains: "abc",
     }).addTo(Map);
 
     Markers_Layer = new L.LayerGroup();
