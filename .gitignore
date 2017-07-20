@@ -37,6 +37,7 @@ nosetests.xml
 #virtualenv
 local
 include
+venv
 
 # fab build
 deploy/builds
